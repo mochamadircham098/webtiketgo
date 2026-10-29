@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TiketGo - Pilihan Utama Jelajahi Dunia</title>
+    <style>
+        :root {
+            --primary: #0194f3;
+            --primary-dark: #0076c6;
+            --primary-light: #e6f4ff;
+            --accent: #ff5722;
+            --accent-hover: #e64a19;
+            --success: #00a651;
+            --danger: #d93025;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --card-shadow: 0 10px 25px -5px rgba(1, 148, 243, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .logo span { color: #ffd166; }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover { opacity: 0.85; }
+
+        .btn-auth {
+            background: var(--white);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-auth:hover { background: #f0f9ff; transform: translateY(-1px); }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            padding: 70px 0 120px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .hero p {
+            font-size: 16px;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+
+        .main-container {
+            margin-top: -65px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .categories {
+            display: flex;
+            gap: 12px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .cat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            transition: all 0.25s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .cat-item:hover { background: #e2e8f0; color: var(--text-dark); }
+        .cat-item.active { background: var(--primary); color: var(--white); box-shadow: 0 4px 12px rgba(1, 148, 243, 0.3); }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input, .input-group select {
+            padding: 12px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(1, 148, 243, 0.15);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            padding-top: 8px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        
+        .btn-accent { background: var(--accent); color: var(--white); }
+        .btn-accent:hover { background: var(--accent-hover); }
+
+        .btn-reset { background: #64748b; color: var(--white); }
+        .btn-reset:hover { background: #475569; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 35px 0 20px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-count {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .ticket-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow);
+            border-color: #cbd5e1;
+        }
+
+        .ticket-badge {
+            align-self: flex-start;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .badge-pesawat { background: #e0f2fe; color: #0284c7; }
+        .badge-kereta { background: #dcfce7; color: #16a34a; }
+        .badge-bus { background: #ffedd5; color: #ea580c; }
+        .badge-hotel { background: #fae8ff; color: #c026d3; }
+
+        .ticket-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .ticket-route {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 12px;
+        }
+
+        .ticket-route .arrow { color: var(--primary); }
+
+        .ticket-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        .ticket-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 14px;
+            margin-top: auto;
+        }
+
+        .ticket-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .ticket-price span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: block;
+        }
+
+        /* Log Terminal Container */
+        .log-container {
+            margin-top: 50px;
+            background: #0f172a;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #1e293b;
+        }
+
+        .log-header {
+            background: #1e293b;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-title {
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .log-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .log-tab {
+            background: #334155;
+            color: #94a3b8;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .log-tab.active { background: var(--primary); color: var(--white); }
+
+        .log-body {
+            padding: 18px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            max-height: 280px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        /* Modal Dialog Pemesanan */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .modal-info-box {
+            background: var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .modal-info-box div { margin-bottom: 4px; }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 24px; }
+            .search-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .action-btns { justify-content: stretch; }
+            .action-btns .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR MODERN -->
+    <header>
+        <div class="container navbar">
+            <a href="#" class="logo">✈️ Tiket<span>Go</span></a>
+            <nav class="nav-links">
+                <a href="#cari">Cari Layanan</a>
+                <a onclick="toggleAdminLog()" style="cursor: pointer; opacity: 0.8; font-size: 12px; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 6px;">⚙️ Panel Log Dosen</a>
+                <button class="btn-auth">Log In</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <section class="hero">
+        <div class="container">
+            <h1>Pilihan utama untuk jelajahi dunia</h1>
+            <p>Pesan tiket Pesawat, Kereta Api, Bus, serta Hotel berkualitas dalam satu platform terpadu.</p>
+        </div>
+    </section>
+
+    <!-- SEARCH & ACTION CARD -->
+    <main class="container main-container">
+        <div class="search-card" id="cari">
+            
+            <!-- Category Tabs Filter -->
+            <div class="categories">
+                <div class="cat-item active" onclick="filterKategori('Semua', this)">🌐 Semua Layanan</div>
+                <div class="cat-item" onclick="filterKategori('Pesawat', this)">✈️ Pesawat</div>
+                <div class="cat-item" onclick="filterKategori('Kereta Api', this)">🚆 Kereta Api</div>
+                <div class="cat-item" onclick="filterKategori('Bus', this)">🚌 Bus & Travel</div>
+                <div class="cat-item" onclick="filterKategori('Hotel', this)">🏨 Hotel & Penginapan</div>
+            </div>
+
+            <!-- Form Filter Search -->
+            <div class="search-grid">
+                <div class="input-group">
+                    <label>🛫 Asal / Lokasi Kota</label>
+                    <input type="text" id="inAsal" placeholder="Contoh: Jakarta">
+                </div>
+                <div class="input-group">
+                    <label>📍 Tujuan / Kota Hotel</label>
+                    <input type="text" id="inTujuan" placeholder="Contoh: Bali, Surabaya">
+                </div>
+                <div class="input-group">
+                    <label>📅 Tanggal Check-in / Berangkat</label>
+                    <input type="date" id="inTanggal">
+                </div>
+                <div class="input-group">
+                    <label>🔍 Kata Kunci / Nama</label>
+                    <input type="text" id="inKata" placeholder="Maskapai/Hotel...">
+                </div>
+            </div>
+
+            <!-- Action Buttons Area -->
+            <div class="action-btns">
+                <button class="btn btn-reset" onclick="resetData()">🔄 Reset Data</button>
+                <button class="btn btn-accent" id="btnSortHarga" onclick="jalankanSortingToggle()">💲 Urutkan: Termurah ➔ Termahal</button>
+                <button class="btn btn-primary" onclick="jalankanSearching()">🔍 Cari Data</button>
+            </div>
+        </div>
+
+        <!-- RESULT SECTION -->
+        <div class="section-header">
+            <div class="section-title">
+                <span>Daftar Transportasi & Hotel Tersedia</span>
+                <span class="badge-count" id="tiketCount">0 Data</span>
+            </div>
+        </div>
+
+        <!-- Ticket Cards Container -->
+        <div class="ticket-grid" id="ticketGrid">
+            <!-- Diisi secara dinamis oleh JavaScript -->
+        </div>
+
+        <!-- LOG TERMINAL SECTION (KHUSUS PANEL DOSEN/PENGUJI) -->
+        <div class="log-container hidden" id="log-section">
+            <div class="log-header">
+                <div class="log-title">
+                    💻 Terminal Log Eksekusi Algoritma (Mode Dosen / Penguji)
+                </div>
+                <div class="log-tabs">
+                    <button class="log-tab active" id="tabSortBtn" onclick="switchLogTab('sort')">Log Sorting (Bubble)</button>
+                    <button class="log-tab" id="tabSearchBtn" onclick="switchLogTab('search')">Log Searching (Linear)</button>
+                </div>
+            </div>
+            <div class="log-body" id="logTerminal">
+                <!-- Log output dicetak di sini -->
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL PEMESANAN DENGAN PILIHAN KELAS -->
+    <div class="modal-overlay hidden" id="orderModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalHeaderTitle">Formulir Pemesanan</h3>
+                <span style="cursor:pointer; font-size: 18px;" onclick="tutupModal()">✕</span>
+            </div>
+            <div class="modal-info-box" id="modalTicketInfo">
+                <!-- Data detail item -->
+            </div>
+            
+            <div class="input-group" id="groupPilihKelas" style="margin-bottom: 14px;">
+                <label id="labelKelasTitle">Pilih Kelas / Tipe Kamar</label>
+                <select id="inPilihKelas" onchange="updateTotalHargaModal()">
+                    <!-- Opsi dinamis -->
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 16px;">
+                <label id="labelQtyTitle">Jumlah Pesanan / Kamar</label>
+                <input type="number" id="inJumlahPesan" value="1" min="1" oninput="updateTotalHargaModal()">
+            </div>
+
+            <div style="font-weight: 800; font-size: 16px; color: var(--accent); margin-bottom: 20px;" id="modalTotalHarga">
+                Total: Rp 0
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-reset" onclick="tutupModal()">Batal</button>
+                <button class="btn btn-primary" onclick="konfirmasiPemesanan()">Konfirmasi Pesan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast hidden" id="toast">
+        <span id="toastMsg">Notifikasi</span>
+    </div>
+
+    <!-- SCRIPT & STRUKTUR DATA -->
+    <script>
+        class LayananItem {
+            constructor(id, jenis, nama, asal, tujuan, tanggal, jam, hargaDasar, sisaKetersediaan) {
+                this.id = id;
+                this.jenis = jenis; 
+                this.nama = nama;
+                this.asal = asal;
+                this.tujuan = tujuan;
+                this.tanggal = tanggal;
+                this.jam = jam;
+                this.hargaDasar = hargaDasar;
+                this.sisaKetersediaan = sisaKetersediaan;
+            }
+        }
+
+        function inisialisasiMasterData() {
+            return [
+                new LayananItem("TKT-001", "Pesawat", "Garuda Indonesia", "Jakarta", "Bali", "2026-11-10", "08:30", 1250000, 12),
+                new LayananItem("TKT-002", "Kereta Api", "Argo Bromo Anggrek", "Jakarta", "Surabaya", "2026-11-10", "09:00", 510000, 25),
+                new LayananItem("HTL-001", "Hotel", "The Apurva Kempinski Luxury", "Bali", "Bali", "2026-11-10", "14:00", 1850000, 6),
+                new LayananItem("TKT-003", "Bus", "Rosalia Indah Executive", "Jakarta", "Yogyakarta", "2026-11-11", "17:00", 210000, 18),
+                new LayananItem("TKT-004", "Pesawat", "Citilink", "Surabaya", "Bali", "2026-11-10", "13:15", 650000, 8),
+                new LayananItem("HTL-002", "Hotel", "Hotel Tentrem Yogyakarta", "Yogyakarta", "Yogyakarta", "2026-11-12", "14:00", 1100000, 10),
+                new LayananItem("TKT-005", "Kereta Api", "Taksaka", "Jakarta", "Yogyakarta", "2026-11-12", "08:00", 380000, 30),
+                new LayananItem("TKT-006", "Pesawat", "AirAsia", "Jakarta", "Surabaya", "2026-11-11", "11:45", 720000, 5),
+                new LayananItem("HTL-003", "Hotel", "JW Marriott Hotel Surabaya", "Surabaya", "Surabaya", "2026-11-13", "14:00", 950000, 8),
+                new LayananItem("TKT-007", "Bus", "Sinar Jaya Super Executive", "Bandung", "Surabaya", "2026-11-12", "15:30", 280000, 15),
+                new LayananItem("TKT-008", "Kereta Api", "Argo Parahyangan", "Jakarta", "Bandung", "2026-11-10", "06:30", 150000, 40),
+                new LayananItem("TKT-009", "Pesawat", "Batik Air", "Bandung", "Bali", "2026-11-13", "14:20", 980000, 10)
+            ];
+        }
+
+        let masterData = inisialisasiMasterData();
+        let tampilanData = [...masterData]; 
+        
+        let isAscending = true; // Status toggle pengurutan (true: termurah, false: termahal)
+        let logSortingBuffer = "";
+        let logSearchingBuffer = "";
+        let activeLogTab = "sort";
+        let selectedCategory = "Semua";
+        let itemAktifDipilih = null;
+
+        function formatRupiah(angka) {
+            return "Rp " + angka.toLocaleString('id-ID');
+        }
+
+        function toggleAdminLog() {
+            const logSec = document.getElementById("log-section");
+            logSec.classList.toggle("hidden");
+            if (!logSec.classList.contains("hidden")) {
+                logSec.scrollIntoView({ behavior: 'smooth' });
+                showToast("⚙️ Panel Log Algoritma Dosen ditampilkan.");
+            }
+        }
+
+        function renderTiketGrid() {
+            const grid = document.getElementById("ticketGrid");
+            grid.innerHTML = "";
+            
+            document.getElementById("tiketCount").innerText = `${tampilanData.length} Data Ditemukan`;
+
+            if (tampilanData.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 16px; color: #64748b;">
+                        🔍 <b>Data tidak ditemukan.</b><br>Silakan ganti kata kunci atau klik tombol Reset.
+                    </div>`;
+                return;
+            }
+
+            tampilanData.forEach(item => {
+                let badgeClass = "badge-pesawat";
+                let icon = "✈️";
+                if (item.jenis === "Kereta Api") { badgeClass = "badge-kereta"; icon = "🚆"; }
+                if (item.jenis === "Bus") { badgeClass = "badge-bus"; icon = "🚌"; }
+                if (item.jenis === "Hotel") { badgeClass = "badge-hotel"; icon = "🏨"; }
+
+                const card = document.createElement("div");
+                card.className = "ticket-card";
+                card.innerHTML = `
+                    <div>
+                        <div class="ticket-badge ${badgeClass}">${icon} ${item.jenis}</div>
+                        <div class="ticket-title">${item.nama}</div>
+                        <div class="ticket-route">
+                            <span>${item.asal}</span>
+                            <span class="arrow">${item.jenis === 'Hotel' ? '📍' : '➔'}</span>
+                            <span>${item.tujuan}</span>
+                        </div>
+                        <div class="ticket-details">
+                            <span>📅 ${item.tanggal}</span>
+                            <span>🕒 ${item.jenis === 'Hotel' ? 'Check-in: ' + item.jam : item.jam + ' WIB'}</span>
+                            <span>💺 ${item.jenis === 'Hotel' ? 'Kamar Tersedia: ' : 'Sisa Kursi: '} ${item.sisaKetersediaan}</span>
+                        </div>
+                    </div>
+                    <div class="ticket-footer">
+                        <div class="ticket-price">
+                            <span>Mulai Dari</span>
+                            ${formatRupiah(item.hargaDasar)}
+                        </div>
+                        <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" 
+                                onclick="bukaModalPemesanan('${item.id}')" ${item.sisaKetersediaan === 0 ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+                            ${item.sisaKetersediaan === 0 ? 'Habis' : (item.jenis === 'Hotel' ? 'Pesan Kamar' : 'Pesan Tiket')}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* TOGGLE BUBBLE SORT (TERMURAH & TERMAHAL) */
+        function jalankanSortingToggle() {
+            jalankanSorting(isAscending);
+            isAscending = !isAscending; // Ganti opsi pengurutan untuk klik selanjutnya
+            
+            const btn = document.getElementById("btnSortHarga");
+            if (isAscending) {
+                btn.innerText = "💲 Urutkan: Termurah ➔ Termahal";
+            } else {
+                btn.innerText = "💲 Urutkan: Termahal ➔ Termurah";
+            }
+        }
+
+        /* BUBBLE SORT IMPLEMENTATION */
+        function jalankanSorting(ascending = true) {
+            let modeText = ascending ? "Harga Termurah" : "Harga Termahal";
+            logSortingBuffer = `=== PROSES EKSEKUSI BUBBLE SORT (${modeText}) ===\n`;
+            let arr = tampilanData;
+            let n = arr.length;
+
+            let iterasiKe = 1;
+            for (let i = 0; i < n - 1; i++) {
+                let swapped = false;
+                for (let j = 0; j < n - i - 1; j++) {
+                    logSortingBuffer += `Iterasi [${iterasiKe++}]: Bandingkan ${arr[j].nama} (${formatRupiah(arr[j].hargaDasar)}) VS ${arr[j+1].nama} (${formatRupiah(arr[j+1].hargaDasar)})\n`;
+                    
+                    let kondisiSwap = ascending ? (arr[j].hargaDasar > arr[j + 1].hargaDasar) : (arr[j].hargaDasar < arr[j + 1].hargaDasar);
+                    
+                    if (kondisiSwap) {
+                        logSortingBuffer += `   ↳ [SWAP] Ditukar posisinya!\n`;
+                        let temp = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = temp;
+                        swapped = true;
+                    } else {
+                        logSortingBuffer += `   ↳ [OK] Sesuai urutan.\n`;
+                    }
+                }
+                if (!swapped) break;
+            }
+
+            logSortingBuffer += `\n=== SORTING SELESAI (${modeText}) ===\n`;
+            arr.forEach((item, idx) => {
+                logSortingBuffer += `  ${idx + 1}. ${item.nama} - ${formatRupiah(item.hargaDasar)}\n`;
+            });
+
+            switchLogTab('sort');
+            renderTiketGrid();
+            showToast(`✅ Data diurutkan berdasarkan ${modeText.toLowerCase()}!`);
+        }
+
+        /* LINEAR SEARCH IMPLEMENTATION */
+        function jalankanSearching() {
+            let asalKey = document.getElementById("inAsal").value.trim().toLowerCase();
+            let tujuanKey = document.getElementById("inTujuan").value.trim().toLowerCase();
+            let tanggalKey = document.getElementById("inTanggal").value;
+            let kataKey = document.getElementById("inKata").value.trim().toLowerCase();
+
+            logSearchingBuffer = "=== PROSES EKSEKUSI LINEAR SEARCH ===\n";
+            let hasilPencarian = [];
+            let totalData = masterData.length;
+
+            for (let i = 0; i < totalData; i++) {
+                let item = masterData[i];
+                logSearchingBuffer += `[Cek ${i + 1}/${totalData}] Item #${item.id} (${item.nama})... `;
+
+                let cocok = true;
+                if (selectedCategory !== "Semua" && item.jenis.toLowerCase() !== selectedCategory.toLowerCase()) cocok = false;
+                if (asalKey && !item.asal.toLowerCase().includes(asalKey)) cocok = false;
+                if (tujuanKey && !item.tujuan.toLowerCase().includes(tujuanKey)) cocok = false;
+                if (tanggalKey && item.tanggal !== tanggalKey) cocok = false;
+                if (kataKey && !item.nama.toLowerCase().includes(kataKey)) cocok = false;
+
+                if (cocok) {
+                    logSearchingBuffer += `[COCOK]\n`;
+                    hasilPencarian.push(item);
+                } else {
+                    logSearchingBuffer += `[TIDAK]\n`;
+                }
+            }
+
+            logSearchingBuffer += `\nHasil: Ditemukan ${hasilPencarian.length} data.`;
+            tampilanData = hasilPencarian;
+            switchLogTab('search');
+            renderTiketGrid();
+            showToast(`🔍 Ditemukan ${hasilPencarian.length} data.`);
+        }
+
+        function switchLogTab(tab) {
+            activeLogTab = tab;
+            const sortBtn = document.getElementById("tabSortBtn");
+            const searchBtn = document.getElementById("tabSearchBtn");
+            const terminal = document.getElementById("logTerminal");
+
+            if (tab === 'sort') {
+                sortBtn.classList.add("active");
+                searchBtn.classList.remove("active");
+                terminal.innerText = logSortingBuffer || "Belum ada eksekusi Bubble Sort...";
+            } else {
+                searchBtn.classList.add("active");
+                sortBtn.classList.remove("active");
+                terminal.innerText = logSearchingBuffer || "Belum ada eksekusi Linear Search...";
+            }
+        }
+
+        function filterKategori(kategori, element) {
+            selectedCategory = kategori;
+            document.querySelectorAll(".cat-item").forEach(el => el.classList.remove("active"));
+            element.classList.add("active");
+            jalankanSearching();
+        }
+
+        function resetData() {
+            masterData = inisialisasiMasterData();
+            tampilanData = [...masterData];
+            isAscending = true;
+            document.getElementById("btnSortHarga").innerText = "💲 Urutkan: Termurah ➔ Termahal";
+            document.getElementById("inAsal").value = "";
+            document.getElementById("inTujuan").value = "";
+            document.getElementById("inTanggal").value = "";
+            document.getElementById("inKata").value = "";
+            logSortingBuffer = "Data di-reset.";
+            logSearchingBuffer = "Data di-reset.";
+            switchLogTab('sort');
+            renderTiketGrid();
+            showToast("🔄 Data dikembalikan ke default!");
+        }
+
+        function bukaModalPemesanan(itemId) {
+            itemAktifDipilih = null;
+            for (let i = 0; i < masterData.length; i++) {
+                if (masterData[i].id === itemId) {
+                    itemAktifDipilih = masterData[i];
+                    break;
+                }
+            }
+            if (!itemAktifDipilih) return;
+
+            const selectKelas = document.getElementById("inPilihKelas");
+            selectKelas.innerHTML = "";
+
+            if (itemAktifDipilih.jenis === "Hotel") {
+                document.getElementById("modalHeaderTitle").innerText = "Formulir Pemesanan Hotel";
+                document.getElementById("labelKelasTitle").innerText = "Pilih Tipe Kamar";
+                document.getElementById("labelQtyTitle").innerText = "Jumlah Kamar";
+                
+                let opsiKamar = [
+                    { nama: "Standard Room", pengali: 1.0 },
+                    { nama: "Deluxe Room (Sarapan Gratis)", pengali: 1.35 },
+                    { nama: "Suite Room (Mewah VIP)", pengali: 1.8 }
+                ];
+                opsiKamar.forEach(opt => {
+                    let optEl = document.createElement("option");
+                    optEl.value = opt.pengali;
+                    optEl.text = `${opt.nama} (+${Math.round((opt.pengali-1)*100)}%)`;
+                    selectKelas.appendChild(optEl);
+                });
+            } else {
+                document.getElementById("modalHeaderTitle").innerText = "Formulir Pemesanan Tiket";
+                document.getElementById("labelKelasTitle").innerText = "Pilih Kelas Perjalanan";
+                document.getElementById("labelQtyTitle").innerText = "Jumlah Penumpang / Tiket";
+
+                let opsiTiket = [
+                    { nama: "Ekonomi", pengali: 1.0 },
+                    { nama: "VIP / Bisnis", pengali: 1.4 },
+                    { nama: "First Class", pengali: 1.9 }
+                ];
+                opsiTiket.forEach(opt => {
+                    let optEl = document.createElement("option");
+                    optEl.value = opt.pengali;
+                    optEl.text = `${opt.nama} (${opt.pengali === 1 ? 'Standar' : '+' + Math.round((opt.pengali-1)*100) + '%'})`;
+                    selectKelas.appendChild(optEl);
+                });
+            }
+
+            document.getElementById("modalTicketInfo").innerHTML = `
+                <div><b>${itemAktifDipilih.nama}</b> (${itemAktifDipilih.jenis})</div>
+                <div>Lokasi/Rute: <b>${itemAktifDipilih.asal} ${itemAktifDipilih.jenis === 'Hotel' ? '' : '➔ ' + itemAktifDipilih.tujuan}</b></div>
+                <div>Harga Dasar: <b>${formatRupiah(itemAktifDipilih.hargaDasar)}</b></div>
+            `;
+            document.getElementById("inJumlahPesan").value = 1;
+            document.getElementById("inJumlahPesan").max = itemAktifDipilih.sisaKetersediaan;
+            updateTotalHargaModal();
+            document.getElementById("orderModal").classList.remove("hidden");
+        }
+
+        function updateTotalHargaModal() {
+            if (!itemAktifDipilih) return;
+            let qty = parseInt(document.getElementById("inJumlahPesan").value) || 1;
+            let pengaliKelas = parseFloat(document.getElementById("inPilihKelas").value) || 1.0;
+            let total = Math.round(itemAktifDipilih.hargaDasar * pengaliKelas * qty);
+            document.getElementById("modalTotalHarga").innerText = "Total: " + formatRupiah(total);
+        }
+
+        function tutupModal() {
+            document.getElementById("orderModal").classList.add("hidden");
+            itemAktifDipilih = null;
+        }
+
+        function konfirmasiPemesanan() {
+            if (!itemAktifDipilih) return;
+            let qty = parseInt(document.getElementById("inJumlahPesan").value) || 1;
+            if (qty > itemAktifDipilih.sisaKetersediaan) {
+                alert("Ketersediaan kuota tidak mencukupi!");
+                return;
+            }
+            itemAktifDipilih.sisaKetersediaan -= qty; 
+            showToast(`🎉 Berhasil memesan ${qty} item!`);
+            tutupModal();
+            renderTiketGrid();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toastMsg").innerText = msg;
+            toast.classList.remove("hidden");
+            setTimeout(() => toast.classList.add("hidden"), 3000);
+        }
+
+        window.onload = function() {
+            renderTiketGrid();
+            switchLogTab('sort');
+        };
+    </script>
+</body>
+</html>
